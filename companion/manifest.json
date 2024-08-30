@@ -1,0 +1,26 @@
+{
+	"id": "microsoft-windows-audio",
+	"name": "microsoft-windows-audio",
+	"shortname": "Win Audio",
+	"description": "Control the audio devices on your Windows machine",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-microsoft-windows-audio.git",
+	"bugs": "https://github.com/bitfocus/companion-module-microsoft-windows-audio/issues",
+	"maintainers": [
+		{
+			"name": "Joseph Zimmerman",
+			"email": "contact@joezimjs.com"
+		}
+	],
+	"runtime": {
+		"type": "node18",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../main.js"
+	},
+	"legacyIds": [],
+	"manufacturer": "Microsoft",
+	"products": ["Windows Audio"],
+	"keywords": []
+}
