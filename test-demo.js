@@ -1,14 +1,11 @@
-import { listOutputs, listInputs, setVolume, mute, setAsDefault } from './lib/main.mjs'
+const { listDevices, setVolume, mute, unmute, setAsDefault } = require('./lib/main.js')
 
 async function main() {
-	const outputs = await listOutputs()
-	console.log('OUTPUT DEVICES')
-	console.log(JSON.stringify(outputs, null, '  '))
-	const inputs = await listInputs()
-	console.log('INPUT DEVICES')
-	console.log(JSON.stringify(inputs, null, '  '))
+	const devices = await listDevices()
+	console.log('DEVICES')
+	console.log(JSON.stringify(devices, null, '  '))
 
-	const multimediaDefault = outputs.find((output) => output.isDefaultForMultimedia)
+	const multimediaDefault = devices.find((d) => d.isDefaultForMultimedia && d.type === 'output')
 
 	console.log('Multi-media Default Device:', multimediaDefault)
 
@@ -19,6 +16,12 @@ async function main() {
 		await sleep(1000)
 		await setVolume(multimediaDefault, previousVolume)
 		console.log(`Volume set to previous volume (${previousVolume}):`, multimediaDefault)
+		await sleep(1000)
+		await mute(multimediaDefault)
+		console.log(`Mute`, multimediaDefault)
+		await sleep(1000)
+		await unmute(multimediaDefault)
+		console.log(`Unmute`, multimediaDefault)
 	} else {
 		console.log('No default multimedia output found')
 	}

@@ -12,13 +12,13 @@ export interface AudioDevice {
 	 */
 	deviceName: string
 	/**
+	 * Whether it's an input or output device.
+	 */
+	type: 'input' | 'output'
+	/**
 	 * Whether this device is the default for multimedia
 	 */
 	isDefaultForMultimedia: boolean
-	/**
-	 * Whether this device is the default for communications
-	 */
-	isDefaultForCommunications: boolean
 	/**
 	 * Whether this device is muted
 	 */

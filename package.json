@@ -5,7 +5,7 @@
 	"scripts": {
 		"format": "prettier -w .",
 		"package": "companion-module-build",
-		"test": "node test-demo.mjs"
+		"test": "node test-demo.js"
 	},
 	"license": "MIT",
 	"repository": {

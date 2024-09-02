@@ -1,10 +1,13 @@
 const { InstanceBase, Regex, runEntrypoint, InstanceStatus } = require('@companion-module/base')
+const { listDevices } = require('./lib/main.js')
 const UpgradeScripts = require('./upgrades')
 const UpdateActions = require('./actions')
 const UpdateFeedbacks = require('./feedbacks')
 const UpdateVariableDefinitions = require('./variables')
 
 class ModuleInstance extends InstanceBase {
+	devices = []
+
 	constructor(internal) {
 		super(internal)
 	}
@@ -12,12 +15,14 @@ class ModuleInstance extends InstanceBase {
 	async init(config) {
 		this.config = config
 
+		this.log('debug', JSON.stringify(config))
 		this.updateStatus(InstanceStatus.Ok)
 
+		await this.getAudioDeviceState()
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
-		this.updateVariableDefinitions() // export variable definitions
 	}
+
 	// When module gets deleted
 	async destroy() {
 		this.log('debug', 'destroy')
@@ -56,6 +61,13 @@ class ModuleInstance extends InstanceBase {
 	}
 
 	updateVariableDefinitions() {
+		UpdateVariableDefinitions(this)
+	}
+
+	async getAudioDeviceState() {
+		this.devices = await listDevices()
+		this.deviceChoices = this.devices.map((d) => ({ id: d.id, label: d.name }))
+
 		UpdateVariableDefinitions(this)
 	}
 }
