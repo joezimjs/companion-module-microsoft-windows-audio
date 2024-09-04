@@ -1,4 +1,4 @@
-const { mute, unmute } = require('./lib/main')
+const { setVolume, mute, unmute } = require('./lib/main')
 
 module.exports = function (self) {
 	let actions = {}
@@ -35,7 +35,7 @@ module.exports = function (self) {
 		callback: async (action, context) => {
 			if (action.options.device) {
 				const device = self.devices.find((d) => d.id === action.options.device)
-				if (device) {
+				if (device && device.id) {
 					self.log('info', `Toggling mute for device ${device.name}. Is Muted: ${device.isMuted}.`)
 					if (device.isMuted) {
 						await unmute(device)
@@ -57,8 +57,8 @@ module.exports = function (self) {
 				type: 'dropdown',
 				label: 'Device',
 				id: 'device',
-				default: self.audioDeviceListDefault,
-				choices: self.audioDeviceList,
+				default: self.devices[0]?.id,
+				choices: self.deviceChoices,
 			},
 			{
 				type: 'number',
@@ -70,46 +70,19 @@ module.exports = function (self) {
 				range: true,
 			},
 		],
-		callback: (action) => {
-			//Standard offset values (aka how the OBS code determines slider percentage)
-			let LOG_RANGE_DB = 96.0
-			let LOG_OFFSET_DB = 6.0
-			let LOG_OFFSET_VAL = -0.77815125038364363
-			let LOG_RANGE_VAL = -2.00860017176191756
+		callback: async (action) => {
+			if (action.options.device && action.options.percent) {
+				const device = self.devices.find((d) => d.id === action.options.device)
+				if (device && device.id) {
+					self.log('info', `Adjusting volume for device ${device.name}. Current volume: ${device.volume}.`)
 
-			//Calculate current "percent" of volume slider in OBS
-			let dB = self.sources[action.options.source].inputVolume
-			let currentPercent = 0.0
-			if (dB >= 0.0) {
-				currentPercent = 100.0
-			} else if (dB <= -96.0) {
-				currentPercent = 0.0
-			} else {
-				currentPercent = ((-Math.log10(-dB + 6.0) - LOG_RANGE_VAL) / (LOG_OFFSET_VAL - LOG_RANGE_VAL)) * 100.0
+					const currentVolume = device.volume ?? 50
+					const newVolume = Math.min(Math.max(currentVolume + action.options.percent, 0), 100)
+					await setVolume(device, newVolume)
+				} else {
+					self.log('error', `Could not find device with id ${action.options.device}`)
+				}
 			}
-
-			//Calculate new "percent" of volume slider
-			let percentAdjustment = Math.abs(action.options.percent)
-
-			let newPercent
-			if (action.options.percent > 0) {
-				newPercent = currentPercent + percentAdjustment
-			} else {
-				newPercent = currentPercent - percentAdjustment
-			}
-			newPercent = newPercent / 100
-			let newDb
-			if (newPercent >= 1.0) {
-				newDb = 0.0
-			} else if (newPercent <= 0.0) {
-				newDb = -100.0
-			} else {
-				newDb =
-					-(LOG_RANGE_DB + LOG_OFFSET_DB) * Math.pow((LOG_RANGE_DB + LOG_OFFSET_DB) / LOG_OFFSET_DB, -newPercent) +
-					LOG_OFFSET_DB
-			}
-
-			self.sendRequest('SetInputVolume', { inputName: action.options.source, inputVolumeDb: newDb })
 		},
 	}
 

@@ -5,34 +5,39 @@ module.exports = async function (self) {
 	let values = {}
 
 	if (Array.isArray(self.devices)) {
-		self.devices.forEach((device, i) => {
+		let indexes = {
+			input: 0,
+			output: 0,
+		}
+		self.devices.forEach((device) => {
+			const index = indexes[device.type]++
 			definitions.push({
-				variableId: `${device.type}_${i}_id`,
-				name: `${capitalizeFirstLetter(device.type)} ${i}'s Device ID`,
+				variableId: `${device.type}_${index}_id`,
+				name: `${capitalizeFirstLetter(device.type)} ${index}'s Device ID`,
 			})
 			definitions.push({
-				variableId: `${device.type}_${i}_name`,
-				name: `${capitalizeFirstLetter(device.type)} ${i}'s Name`,
+				variableId: `${device.type}_${index}_name`,
+				name: `${capitalizeFirstLetter(device.type)} ${index}'s Name`,
 			})
 			definitions.push({
-				variableId: `${device.type}_${i}_volume`,
-				name: `${capitalizeFirstLetter(device.type)} ${i}'s Volume`,
+				variableId: `${device.type}_${index}_volume`,
+				name: `${capitalizeFirstLetter(device.type)} ${index}'s Volume`,
 			})
 			definitions.push({
-				variableId: `${device.type}_${i}_isMuted`,
-				name: `Whether ${capitalizeFirstLetter(device.type)} ${i} is muted`,
+				variableId: `${device.type}_${index}_isMuted`,
+				name: `Whether ${capitalizeFirstLetter(device.type)} ${index} is muted`,
 			})
 			definitions.push({
-				variableId: `${device.type}_${i}_isDefault`,
-				name: `Whether ${capitalizeFirstLetter(device.type)} ${i} is default`,
+				variableId: `${device.type}_${index}_isDefault`,
+				name: `Whether ${capitalizeFirstLetter(device.type)} ${index} is default`,
 			})
 
 			Object.assign(values, {
-				[`${device.type}_${i}_id`]: device.id,
-				[`${device.type}_${i}_name`]: device.name,
-				[`${device.type}_${i}_volume`]: device.volume,
-				[`${device.type}_${i}_isMuted`]: device.isMuted,
-				[`${device.type}_${i}_isDefault`]: device.isDefault,
+				[`${device.type}_${index}_id`]: device.id,
+				[`${device.type}_${index}_name`]: device.name,
+				[`${device.type}_${index}_volume`]: device.volume,
+				[`${device.type}_${index}_isMuted`]: device.isMuted,
+				[`${device.type}_${index}_isDefault`]: device.isDefault,
 			})
 		})
 	}
