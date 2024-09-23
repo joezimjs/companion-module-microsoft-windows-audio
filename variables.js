@@ -37,7 +37,7 @@ module.exports = async function (self) {
 				[`${device.type}_${index}_name`]: device.name,
 				[`${device.type}_${index}_volume`]: device.volume,
 				[`${device.type}_${index}_isMuted`]: device.isMuted,
-				[`${device.type}_${index}_isDefault`]: device.isDefault,
+				[`${device.type}_${index}_isDefault`]: device.isDefaultForMultimedia,
 			})
 		})
 	}
@@ -48,20 +48,3 @@ module.exports = async function (self) {
 	self.setVariableDefinitions(definitions)
 	self.setVariableValues(values)
 }
-
-/*
-X = 1-N
-output_X_id
-output_X_name
-output_X_volume
-output_X_isMuted
-output_X_isDefaultForMultimedia
-output_X_isDefaultForCommunications
-
-input_X_id
-input_X_name
-input_X_volume
-input_X_isMuted
-input_X_isDefaultForMultimedia
-input_X_isDefaultForCommunications
-*/
